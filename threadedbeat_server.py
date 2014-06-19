@@ -37,19 +37,20 @@ class Receiver(threading.Thread):
         self.goOnEvent = goOnEvent
         self.heartbeats = heartbeats
         self.rec_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-#        self.rec_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
+        self.rec_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
         self.rec_socket.settimeout(CHECK_TIMEOUT)
         self.rec_socket.bind((HOST,PORT))
     def run(self):
         while self.goOnEvent.isSet():
             try:
                 data,addr = self.rec_socket.recvfrom(5)
+                print(data,addr)
                 if data == 'PyHB':
                     self.heartbeats[addr[0]] = time.time()
             except socket.timeout as e:
                 print e
 
-def main(num_receivers=1):
+def main(num_receivers=2):
     receiver_event = threading.Event()
     receiver_event.set()
     heartbeats = Heartbeats()
