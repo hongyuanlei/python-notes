@@ -221,7 +221,12 @@ results = pool.map(urllib2.urlopen, urls)
 #close the pool and wait for the work to finish 
 pool.close() 
 pool.join() 
-实际起作用的代码只有 4 行，其中只有一行是关键的。map 函数轻而易举的取代了前文中超过 40 行的例子。为了更有趣一些，我统计了不同方法、不同线程池大小的耗时情况。
+
+#实际起作用的代码只有 4 行，其中只有一行是关键的。map 函数轻而易举的取
+
+#代了前文中超过 40 行的例子。为了更有趣一些，我统计了不同方法、不同线程
+
+#池大小的耗时情况。
 
 # results = [] 
 # for url in urls:
