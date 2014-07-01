@@ -125,7 +125,7 @@ alltest = unittest.TestSuite((suite1,suite2))
 **7、交互式运行测试**
 我们编写测试的主要目的是运行它们并检查我们的软件是否工作正常。测试框架使用“TestRunner”类来为运行测试提供环境。最常用的TestRunner是TextTestRunner，它可以以文字方式运行测试并报告结果：
 ```
-runner = unittest.TextTestRunner(0
+runner = unittest.TextTestRunner()
 runner.run(widgetTestSuite)
 ```
 TextTestRunner默认将输出发送到sys.stderr，但是你可以通过向它的构造传递一个不同的类似文件(file-object)对象来改变默认方式。如需要在Python解释器会话中运行测试，这样使用TextTestRunner是一个理想的方法。
@@ -135,7 +135,7 @@ TextTestRunner默认将输出发送到sys.stderr，但是你可以通过向它�
 unittest模块包含一个main方法，可以方便地将测试模块转变为可以运行测试的脚本。main 使用unittest.TestLoader类来自动查找和加载模块内测试用例。
 
 因此，如果你之前已经使用test*惯例对测试方法进行命名，那么你就可以将以下代码插入测试模块的结尾：
-```
+```Python
 if __name__ == '__main__':
     unittest.main()
 ```
@@ -144,15 +144,15 @@ if __name__ == '__main__':
 如需从命令行运行任意测试，你可以将unittest模块作为脚本运行，并将所需执行的测试套件中的测试用例名称作为参数传递给此脚本：
 ```Shell
 % python unittest.py widgettests.WidgetTestSuite
- % python unittest.py widgettests.makeWidgetTestSuite
+% python unittest.py widgettests.makeWidgetTestSuite
 ```
 你还可以在命令行指明特定的测试（方法）来执行。如要运行“listtests”模块中的TestCase类的子类 'ListTestCase'（参见发布软件包中的“examples”子目录）， 你可以执行以下命令：
 ```Shell
- % python unittest.py listtests.ListTestCase.testAppend
+% python unittest.py listtests.ListTestCase.testAppend
 ```
 “testAppend”是测试用例实例将要执行的测试方法的名称。你可以执行以下代码来创建ListTestCase类实例并执行其所包含的所有“test*”测试方法：
 ```Shell
- % python unittest.py listtests.ListTestCase
+% python unittest.py listtests.ListTestCase
 ```
 
 
