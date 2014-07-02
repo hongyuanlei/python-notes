@@ -62,3 +62,70 @@ response = urllib2.urlopen(request)
 **4、Redirect**
 
 urllib2 默认情况下会针对 HTTP 3XX 返回码自动进行 redirect 动作，无需人工配置。要检测是否发生了 redirect 动作，只要检查一下 Response 的 URL 和 Request 的 URL 是否一致就可以了。
+```Python
+import urllib2
+response = urllib2.urlopen("http://www.google.cn")
+redirected = response.geturl() == "http://www.google.cn")
+```
+如果不想自动redirect，除了使用更底层次的httplib库之外，还可以自定义HTTPRedirectHandler类。
+```Python
+import urllib2
+class RedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_301(self,req,fp,code,msg,headers):
+        pass
+    def http_error_302(self,req,fp,code,msg,headers):
+        pass
+opener = urllib2.build_opener(RedirectHandler)
+opener.open("http://www.google.cn")
+```
+**5、Cookie**
+
+urllib2对Cookie的处理也是自动的。如果需要得到某个Cookie项的值，可以这么做：
+```Python
+import urllib2
+import cookielib
+
+cookie = cookielib.CookieJar()
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+response = opener.open("http://www.google.com")
+for item in cookie:
+    if item.name == 'some_cookie_item_name':
+        print item.value
+```
+**6、使用 HTTP 的 PUT 和 DELETE 方法**
+
+urllib2 只支持 HTTP 的 GET 和 POST 方法，如果要使用 HTTP PUT 和 DELETE ，只能使用比较低层的 httplib 库。虽然如此，我们还是能通过下面的方式，使 urllib2 能够发出 PUT 或 DELETE 的请求：
+```Python
+import urllib2
+
+request = urllib2.Request(uri, data=data)
+request.get_method = lambda: 'PUT' # or 'DELETE'
+response = urllib2.urlopen(request)
+```
+这种做法虽然属于 Hack 的方式，但实际使用起来也没什么问题。
+
+**7、得到 HTTP 的返回码**
+
+对于 200 OK 来说，只要使用 urlopen 返回的 response 对象的 getcode() 方法就可以得到 HTTP 的返回码。但对其它返回码来说，urlopen 会抛出异常。这时候，就要检查异常对象的 code 属性了：
+```Python
+import urllib2
+try:
+    response = urllib2.urlopen('http://restrict.web.com')
+except urllib2.HTTPError, e:
+    print e.code
+```
+
+**8、Debug Log**
+
+使用 urllib2 时，可以通过下面的方法把 debug Log 打开，这样收发包的内容就会在屏幕上打印出来，方便调试，有时可以省去抓包的工作
+
+```Python
+import urllib2
+
+httpHandler = urllib2.HTTPHandler(debuglevel=1)
+httpsHandler = urllib2.HTTPSHandler(debuglevel=1)
+opener = urllib2.build_opener(httpHandler, httpsHandler)
+
+urllib2.install_opener(opener)
+response = urllib2.urlopen('http://www.google.com')
+```
