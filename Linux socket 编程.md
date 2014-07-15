@@ -159,3 +159,27 @@ close一个TCP socket的缺省行为时把该socket标记为以关闭，然后�
 
 注意：close操作只是使相应socket描述字的引用计数-1，只有当引用计数为0的时候，才会触发TCP客户端向服务器发送终止连接请求。
 
+**4、socket中TCP的三次握手建立**
+
+我们知道tcp建立连接要进行“三次握手”，即交换三个分组。大致流程如下：
+*    客户端向服务器发送一个SYN J
+*    服务器向客户端响应一个SYN K，并对SYN J进行确认ACK J+1
+*    客户端再想服务器发一个确认ACK K+1
+三次握手发生在socket的那几个函数中呢？请看下图：
+![图1:socket中发送的TCP三次握手](https://raw.githubusercontent.com/hongyuanlei/papersite/master/image/201012122157476286.png)
+
+从图中可以看出，当客户端调用connect时，触发了连接请求，向服务器发送了SYN J包，这时connect进入阻塞状态；服务器监听到连接请求，即收到SYN J包，调用accept函数接收请求向客户端发送SYN K ，ACK J+1，这时accept进入阻塞状态；客户端收到服务器的SYN K ，ACK J+1之后，这时connect返回，并对SYN K进行确认；服务器收到ACK K+1时，accept返回，至此三次握手完毕，连接建立。
+
+总结：客户端的connect在三次握手的第二次返回，而服务器端的accept在三次握手的第三次返回。
+
+**5、socket中TCP的四次握手释放连接详解**
+
+上面介绍了socket中TCP的三次握手建立过程，及其涉及的socket函数。现在我们介绍socket中的四次握手释放连接的过程，请看下图：
+
+![图2、socket中发送的TCP四次握手](https://raw.githubusercontent.com/hongyuanlei/papersite/master/image/201012122157494693.png)
+
+图示过程如下：
+*    某个应用进程首先调用close主动关闭连接，这时TCP发送一个FIN M；
+*    另一端接收到FIN M之后，执行被动关闭，对这个FIN进行确认。它的接收也作为文件结束符传递给应用进程，因为FIN的接收意味着应用进程在相应的连接上再也接收不到额外数据；
+*    一段时间之后，接收到文件结束符的应用进程调用close关闭它的socket。这导致它的TCP也发送一个FIN N；
+*    接收到这个FIN的源发送端TCP对它进行确认。
