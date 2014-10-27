@@ -23,7 +23,9 @@ _阻塞式I/O、非阻塞式I/O、I/O复用、信号驱动式I/O、异步I/O_；
 **阻塞式I/O模型**
 
 最流行的I/O模型是阻塞式I/O（blocking I/O）模型，默认情况下，所有套接字都是阻塞的。以数据报套接字作为例子，我们有如下图所示的情形。
+
 ![阻塞式I/O模型](https://raw.githubusercontent.com/hongyuanlei/papersite/master/image/01.jpg)
+
 在上图中，进程调用recvfrom，其系统调用直到数据报去到达且被复制到应用进程的缓冲区中或者发生错误才返回。我们说进程在从调用recvfrom开始到它返回的整段时间内是被阻塞的。recvfrom成功返回后，应用进程开始处理数据报。
 
 **非阻塞式I/O模型**
